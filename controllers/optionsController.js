@@ -4,28 +4,32 @@ const Question= require('../models/questions');
 module.exports.create=async function(req,res){
     // in this we will create the options to the id given question 
     console.log(req.body,req.params.id);
+
     const opt=await Option.create({
         option:req.body.option,
         question:req.params.id,
     });
-    // it is for adding the vote to option of the id that is given by mongodb by update query and using the string interpolition
-    const updateOpt=await Option.findByIdAndUpdate(opt._id,{"add_vote":`http://localhost:8080/api/options/${opt._id}/add_vote`})
-    updateOpt.save()
-    // now searching the question so that we can append the option in question-->option array
-    const ques=await Question.findById(req.params.id);
-    if(ques){
-    ques.options.push(updateOpt)
-    ques.save()
-    console.log(ques)
-    res.send(ques) 
 
+    // it is for adding the vote to option of the id that is given by mongodb by update query and using the string interpolition
+    const updateOpt = await Option.findByIdAndUpdate(opt._id,{"add_vote":`http://localhost:8080/api/options/${opt._id}/add_vote`})
+    updateOpt.save()
+
+    // now searching the question so that we can append the option in question-->option array
+    const ques = await Question.findById(req.params.id);
+    
+    if(ques){
+        ques.options.push(updateOpt);
+        ques.save();
+
+        console.log(ques);
+        res.send(ques); 
     }
     else{
         res.send('question does not exists')
     }
 }
 
-module.exports.add_vote=async function(req,res){
+module.exports.add_vote = async function(req,res){
     // in this votes will be added to the particular option of the question
     console.log(req.params.id);
     // this the increment query in which the vote is incremented by one 
@@ -41,7 +45,7 @@ module.exports.add_vote=async function(req,res){
     }
 }
 
-module.exports.delete=async function(req,res){
+module.exports.delete = async function(req,res){
     // delete the id option 
     console.log('id',req.params.id);
     const opt=await Option.findById(req.params.id);
@@ -52,7 +56,8 @@ module.exports.delete=async function(req,res){
         // now absolutely deleting that option
         await Option.findByIdAndDelete(req.params.id)
 
-        console.log(ques);
+        console.log(ques);//remove this line 
+
         res.send('option deleted')
     }
     // handling the bad request
