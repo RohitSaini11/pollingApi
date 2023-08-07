@@ -6,11 +6,14 @@ module.exports.create = async function(req,res){
     console.log(req.url);
     console.log(req.body);
     //create the question
-    await Question.create(req.body,function(err,ques){
-            if(err){console.log("error in creating the question schema",err);}
+    await Question.create(req.body)
+    .then((ques) => {
         console.log(ques);
         res.send(ques);
     })
+    .catch((err) => {
+        console.log("error in creating the question schema",err);
+    });
 }
 
 module.exports.showDetails = async function(req,res){
